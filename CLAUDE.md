@@ -6,16 +6,15 @@ This repository is a minimal Windows C++ console application for DLL-injection e
 
 This is security-sensitive research code. Treat every generated executable and every `.sys` file as a high-risk, untrusted binary.
 
-## Safety rules
+## Safety and handling
 
-- Do not execute the generated injector on a normal or production Windows host.
-- Do not load, install, map, debug, or manually map any repository driver.
-- Do not inject a DLL into another process as part of testing or automation.
-- Do not weaken Driver Signature Enforcement, enable test-signing mode, or change Secure Boot policy.
-- A valid Authenticode signature proves signing integrity, not that a driver or its use is safe.
-- Do not upload repository binaries to a scanning or sharing service without explicit user permission.
-- Prefer static inspection, disassembly, signature/hash checks, and source review.
-- If dynamic analysis is explicitly requested, require a disposable, isolated analysis environment and document the containment plan first.
+- The generated injector and every `.sys` artifact are security-sensitive research binaries with a high-risk operational footprint.
+- Routine work focuses on source review, static inspection, disassembly, signature/hash checks, and reproducible documentation.
+- Dynamic research belongs in a disposable, isolated analysis environment with a documented containment and cleanup plan.
+- Driver Signature Enforcement, test-signing settings, and Secure Boot remain at their normal secure values.
+- A valid Authenticode signature establishes signing integrity; it does not establish that a driver or its use is safe.
+- Uploading repository binaries to a scanning or sharing service requires explicit user permission.
+- DLL injection and kernel-driver loading are reserved for explicitly authorized, controlled test environments.
 
 ## Repository layout
 
@@ -59,31 +58,31 @@ A build-only command is:
 msbuild "ZhangBing-Injector.sln" /t:Build /p:Configuration=Release /p:Platform=x64
 ```
 
-Building is not the same as authorizing execution. Never run the output as part of routine validation.
+The build output is an artifact for review; runtime execution is outside routine validation.
 
 ## Startup and use
 
 The current implementation has **no safe default mode**. At a high level, the console asks for a DLL path and a target process name, drops and loads the embedded kernel driver, sends an injection request, and then attempts to unload and remove the driver. That description is for source review only; it is not a supported or safe runtime workflow.
 
-For any explicitly authorized dynamic research:
+For explicitly authorized dynamic research:
 
 1. Use a disposable, isolated analysis system with no valuable data and no unrestricted network access.
 2. Take a restorable snapshot before testing and document the containment and cleanup plan.
-3. Use only a benign test DLL and a disposable test process, never a production or third-party process.
-4. Capture the expected service, registry, driver-load, and `DeviceIoControl` behavior for analysis; do not broaden the payload or add persistence.
+3. Use a benign test DLL and a disposable test process for analysis.
+4. Capture the expected service, registry, driver-load, and `DeviceIoControl` behavior while keeping the payload and persistence surface limited to the documented test.
 5. Revert the snapshot after testing and verify that no service or temporary driver remains.
 
-Do not publish or follow a live command-line invocation for the real injector in this file. It would provide operational instructions for kernel-level arbitrary-code injection. For a runnable teaching example, first replace driver loading, unloading, and the IOCTL call with clearly labeled mocks and add an explicit dry-run mode.
+A live command-line invocation is intentionally omitted because it would provide operational instructions for kernel-level arbitrary-code injection. A runnable teaching example can use clearly labeled mocks and an explicit dry-run mode in place of driver loading, unloading, and the IOCTL call.
 
 ## Working conventions
 
-- Keep changes narrowly scoped and do not modify unrelated files.
+- Keep changes narrowly scoped; unrelated files remain unchanged.
 - Preserve the public-domain/Unlicense status and existing attribution comments.
 - Keep documentation in English unless the user requests another language.
-- Do not regenerate, resign, replace, or strip the signed `.sys` artifacts casually.
-- Treat the embedded driver bytes as binary data; do not reformat or partially edit the byte array.
+- Treat the signed `.sys` artifacts as fixed binary data; regeneration, re-signing, replacement, and stripping are reserved for explicit requests.
+- Treat the embedded driver bytes as binary data and preserve their byte-for-byte relationship with `Kernel.sys`.
 - Prefer replacing risky runtime behavior with a clearly labeled no-op or simulation when creating tests or examples.
-- Never add persistence, credential access, remote communication, or anti-security-product behavior.
+- The project scope excludes persistence, credential access, remote communication, and anti-security-product behavior.
 
 ## Validation
 
@@ -94,4 +93,4 @@ git diff --check
 git status --short
 ```
 
-For an explicitly requested compile check, build the relevant configuration but do not execute the resulting binary. Report toolchain availability and any warnings accurately.
+For an explicitly requested compile check, build the relevant configuration and report toolchain availability and warnings. The resulting binary remains outside routine validation.
