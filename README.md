@@ -13,7 +13,7 @@ I do not want to admit it
 
 It is already certain, all of this
 
-I can simply think that if I escaped right now, everything would be fine
+I can only imagine that if I drowned in it right now, it would be okay
 
 ## Some Regrets
 ![IMG_3321](https://github.com/user-attachments/assets/55c9f61d-9d5d-4217-a8a6-27003112c831)
